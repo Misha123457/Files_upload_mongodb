@@ -1,7 +1,7 @@
+
 # -*- coding: utf-8 -*-
 """
 Created on Sun Nov  1 17:06:13 2020
-
 @author: m.zhukov
 """
 
@@ -10,13 +10,17 @@ import urllib.request
 from zipfile import ZipFile
 from flask import Flask, request, redirect, jsonify
 from werkzeug.utils import secure_filename
+from flask import send_from_directory
+from flask import send_file
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 def allowed_file(filename):
 	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 app = Flask(__name__)
+PROJECT_FOLDER= 'C:/Users/m.zhukov/Desktop/project'
 UPLOAD_FOLDER = 'C:/Users/m.zhukov/Desktop/project/upload'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['PROJECT_FOLDER'] = PROJECT_FOLDER
 @app.route('/multiple-files-upload', methods=['POST'])
 def upload_file():
 	# check if the post request has the file part
@@ -45,13 +49,19 @@ def upload_file():
 		resp.status_code = 500
 		return resp
 	if success:
-		resp = jsonify({'message' : 'Files successfully uploaded'})
-		resp.status_code = 201
+		resp = jsonify({'Link for zip download' : 'http://localhost:5000/download'})
+		resp.status_code = 201       
 		return resp
+        #return send_file('output.zip', as_attachment=True)
 	else:
 		resp = jsonify(errors)
 		resp.status_code = 500
 		return resp
-
+    
+@app.route('/download')
+def downloadFile ():
+    #For windows you need to use drive name [ex: F:/Example.pdf]
+    path = "output.zip"
+    return send_file(path, as_attachment=True)
 if __name__ == "__main__":
     app.run()

@@ -28,7 +28,8 @@ def upload_file():
     if 'files[]' not in request.files:
     	resp = jsonify({'message' : 'No file part in the request'})
     	resp.status_code = 400
-    	return resp		  
+    	return resp	
+    print(len(files))	  
     if len(files)==1 or len(files)>10:
         errors["The number of incoming files"] = 'out of range'
     else:
@@ -40,8 +41,9 @@ def upload_file():
                     os.chdir(app.config['UPLOAD_FOLDER'])
                     zipObj.write(filename)
                     success = True   
-                else: 
-                    errors[file.filename] = 'File type is not allowed'                 			
+                else:
+                    errors[file.filename] = 'File type is not allowed'                 		
+	
     if success and errors:
     	errors['message'] = 'File(s) successfully uploaded'
     	resp = jsonify(errors)
